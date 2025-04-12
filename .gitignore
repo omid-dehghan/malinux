@@ -1,0 +1,12 @@
+# Ignore the virtual environment
+myenv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Optional: Ignore VS Code settings, logs, and system files
+.vscode/
+*.log
+.DS_Store
