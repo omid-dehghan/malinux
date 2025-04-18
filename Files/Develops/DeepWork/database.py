@@ -26,6 +26,14 @@ class dateDB:
         with open(self.file_path, "w") as f:
             json.dump(serializable_data, f, indent=2)
 
+    def initialize_total(self):
+        total = DurationList.Duration.get_timedelta_obj("00:00")
+        if "total" not in self.get_data():
+            for key in self.get_data().keys():
+                if not self.get_data()[key].isEmpty(): 
+                    total += DurationList.Duration.get_timedelta_obj(self.get_data()[key].get_total_duration)
+            self.get_data()["total"] = f"~{DurationList.Duration.from_timedelta(total)}"
+        self._save()
     def add(self, duration: str, index=None, target_date=str(date.today())):
         if target_date not in self.get_data():
             self.get_data()[target_date] = DurationList()
@@ -62,21 +70,21 @@ class dateDB:
         self._save()
         
     def total_duration(self, addorsub:str, duration:str):
-        total = DurationList.Duration.get_timedelta_obj("00:00")
-        if "total" not in self.get_data():
-            for key in self.get_data().keys():
-                if not self.get_data()[key].isEmpty() : 
-                    total += DurationList.Duration.get_timedelta_obj(self.get_data()[key].get_total_duration)
-            self.get_data()["total"] = f"~{DurationList.Duration.from_timedelta(total)}"
+        self.initialize_total()
         if addorsub.lower() == "add":
             total = DurationList.Duration.get_timedelta_obj(self.get_data()["total"][1:])
             total += DurationList.Duration.get_timedelta_obj(duration)
             self.get_data()["total"] = f"~{DurationList.Duration.from_timedelta(total)}"
-        if addorsub.lower() == "sub":
+        elif addorsub.lower() == "sub":
             total = DurationList.Duration.get_timedelta_obj(self.get_data()["total"][1:])
             total -= DurationList.Duration.get_timedelta_obj(duration)
             self.get_data()["total"] = f"~{DurationList.Duration.from_timedelta(total)}"
 
+    def reset_total(self):
+        if "total" in self.get_data():
+            del self.get_data()["total"]
+        self.initialize_total()
+        return self.get("total")
 
     def get(self, target_date=None):
         if target_date is None:

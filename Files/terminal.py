@@ -55,35 +55,20 @@ class Terminal:
 
 
 if __name__ == "__main__":
-    import time
     T = Terminal()
     db = dateDB()
     cv = CommandValidator()
     executor = CommandExecutor(db)
     
-    inputs = ["deepwork 0:30", "deepwork pop",
-              "deepwork list 0:31 0:32 0:33",
-              "deepwork today", "deepwork total","deepwork pop -10", "deepwork popall", 
-              "deepwork 2025-04-18 list 0:30 0:31",
-              "deepwork 2025-04-18 pop 1", "deepwork 2025-04-18",
-              "deepwork 2025-04-18 1:00", "deepwork 2025-04-18 1:02 -10",
-              "deepwork 2025-04-18 pop", "deepwork -10 2025-04-18 1:02",
-              "deepwork 2025-04-18 popall", "deepwork 2025-04-18 list 0:30 0:31",]
-    inputs = ["deepwork list 2025-04-18  0:30 0:31", "deepwork list 2025-04-18  0:30 0:31",
-              ]
     while True:
         try:
-            # inp = prompt(">>> ", lexer=Terminal.CommandLexer(),
-            #              style=Terminal.style).strip()
-            # if not inp:
-            #     continue
-            for inp in inputs:
-                T.setInput(inp)
-                out = ""
-                print(T.cmds)
-                if cv.validate(T.cmds):
-                    print(executor.execute(T.cmds))
-                    print("------------")
-                time.sleep(8)
+            inp = prompt(">>> ", lexer=Terminal.CommandLexer(),
+                         style=Terminal.style).strip()
+            if not inp:
+                continue
+            T.setInput(inp)
+            out = ""
+            if cv.validate(T.cmds):
+                print(executor.execute(T.cmds))
         except Exception as e:
             print(f"[Error] {e}")

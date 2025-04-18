@@ -9,6 +9,7 @@ class CommandValidator:
                      "list",
                      "today",
                      "total",
+                     "retotal"
                      ]
 
     def __init__(self):
@@ -91,6 +92,8 @@ class CommandExecutor:
                 return self.db.get_today_data()
             elif cmd == "total":
                 return self.db.get("total")
+            elif cmd == "retotal":
+                return self.db.reset_total()
             elif CommandValidator.is_duration(cmd):
                 self.db.add(cmd)
                 return self.db.get_today_data()
@@ -143,6 +146,7 @@ class CommandExecutor:
         elif self.cmds[1] == "pop" and CommandValidator.is_valid_index(self.cmds[2]):
             self.db.pop(int(self.cmds[2]))
             return self.db.get_today_data() 
+        
         else:
             return "command not found"
     
@@ -186,10 +190,3 @@ class IncompleteCommandException(CommandExceptions):
     def __init__(self, cmd: str):
         message = f"incomplete_command: <{cmd}>: complete the command"
         super().__init__(message)
-
-
-if __name__ == "__main__":
-    try:
-        pass
-    except Exception as e:
-        print(e)
