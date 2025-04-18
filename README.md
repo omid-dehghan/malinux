@@ -12,17 +12,71 @@ This project uses a simple list-based data structure to help you track your deep
 
 Available Commands
 >>> deepwork HH:MM
-Add a single deep work session duration.
+append a single deep work session duration.
 Example:
 >>> deepwork 00:20
 
+>>> deepwork HH:MM N
+insert a single deep work session duration with index N.
+Example:
+>>> deepwork 00:20 1
+
 >>> deepwork list HH:MM HH:MM ...
-Add multiple deep work durations at once.
+append multiple deep work durations at once.
 Example:
 >>> deepwork list 00:20 01:20 10:00
 
->>> deepwork pop
+>>>  deepwork pop N
+Remove a recorded duration from the list with index N.
+Example:
+>>>  deepwork 0020 1
+
+>>>  deepwork pop
 Remove the last recorded duration from the list.
 
->>> deepwork popall
+>>>  deepwork popall
 Clear all durations from the list.
+
+>>>  deepwork total
+total duration that you worked overall.
+
+>>>  deepwork today
+it will get today record.
+
+>>>  deepwork retotal
+reset the total duration.
+
+>>>  deepwork [datetime-%Y-%m-%d] HH:MM
+append a single deep work session duration to a date.
+Example:
+>>>  deepwork 2025-04-18 00:20
+
+>>>  deepwork [datetime-%Y-%m-%d] HH:MM N
+append a single deep work session duration to a date with index N.
+Example:
+>>>  deepwork 2025-04-18 00:20 1
+
+>>>  deepwork [datetime-%Y-%m-%d]
+get a date data.
+Example:
+>>>  deepwork 2025-04-18
+
+>>>  deepwork [datetime-%Y-%m-%d] pop
+Remove the last recorded duration of a date.
+Example:
+>>>  deepwork 2025-04-18 pop
+
+>>>  deepwork [datetime-%Y-%m-%d] pop N
+Remove the last recorded duration of a date with index N.
+Example:
+>>>  deepwork 2025-04-18 pop 1
+
+>>>  deepwork [datetime-%Y-%m-%d] popall
+Clear all durations from the list.
+Example:
+>>>  deepwork 2025-04-18 popall
+
+>>>  deepwork [datetime-%Y-%m-%d] list HH:MM HH:MM
+Clear all durations from the list.
+Example:
+>>>  deepwork 2025-04-18 list 0:30 1:30
