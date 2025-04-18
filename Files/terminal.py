@@ -1,23 +1,21 @@
-from turtle import textinput
 from prompt_toolkit import prompt
 from prompt_toolkit.lexers import Lexer
 from prompt_toolkit.styles import Style
 from Develops.DeepWork.database import dateDB
-import re
-
+from commands import CommandValidator, CommandExecutor
 
 
 class Terminal:
     def __init__(self):
         pass
 
-    def setInput(self, input:str):
+    def setInput(self, input: str):
         self._input = input
 
     @property
     def input(self):
         return self._input
-    
+
     @property
     def cmds(self):
         if self.input == None:
@@ -26,11 +24,10 @@ class Terminal:
             return None
         else:
             return self.input.split()
-        
+
     # Define your color rules here
     highlight_words = {
         "deepwork": "class:deepwork",
-
     }
 
     # Define your color styles
@@ -56,56 +53,37 @@ class Terminal:
                 return result
             return get_tokens
 
-    def check_inp(self):
-        db = dateDB()
-        # layer 0
-        if self.cmds[0] == "deepwork":
-            # layer 1
-            if not self.command_exists(1):
-                return "command_not_found"
-            cmd = self.cmds[1].lower()
-            # pop commands
-            if cmd == "pop":
-                db.pop()
-                return db.get_today_data()
-            elif cmd == "popall":
-                db.pop_all()
-                return db.get_today_data()
-            # add commands
-            elif re.match(r"^\d{1,2}:\d{2}$", cmd):
-                if self.command_exists(2):
-                    db.add(cmd, index=int(self.cmds[2]))
-                elif not self.command_exists(2):
-                    db.add(cmd)
-                return db.get_today_data()
-            elif cmd == "list":
-                db.add_list(self.cmds[2:])
-                return db.get_today_data()
-            
-            # find commands
-            elif cmd == "today":
-                return db.get_today_data()
-            elif re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", cmd):
-                return db.get(cmd)
-            else:
-                return f"command_not_found: <{cmd}>: command not found"
-        else:
-            return f"command_not_found: <{self.input}>: command not found"
-
-    def command_exists(self, index):
-        return len(self.cmds) > index
-    
 
 if __name__ == "__main__":
+    import time
     T = Terminal()
+    db = dateDB()
+    cv = CommandValidator()
+    executor = CommandExecutor(db)
+    
+    inputs = ["deepwork 0:30", "deepwork pop",
+              "deepwork list 0:31 0:32 0:33",
+              "deepwork today", "deepwork total","deepwork pop -10", "deepwork popall", 
+              "deepwork 2025-04-18 list 0:30 0:31",
+              "deepwork 2025-04-18 pop 1", "deepwork 2025-04-18",
+              "deepwork 2025-04-18 1:00", "deepwork 2025-04-18 1:02 -10",
+              "deepwork 2025-04-18 pop", "deepwork -10 2025-04-18 1:02",
+              "deepwork 2025-04-18 popall", "deepwork 2025-04-18 list 0:30 0:31",]
+    inputs = ["deepwork list 2025-04-18  0:30 0:31", "deepwork list 2025-04-18  0:30 0:31",
+              ]
     while True:
         try:
-            inp = prompt(">>> ", lexer=Terminal.CommandLexer(),
-                         style=Terminal.style).strip()
-            if not inp:
-                continue
-            T.setInput(inp)
-            out = T.check_inp()
-            print(out)
+            # inp = prompt(">>> ", lexer=Terminal.CommandLexer(),
+            #              style=Terminal.style).strip()
+            # if not inp:
+            #     continue
+            for inp in inputs:
+                T.setInput(inp)
+                out = ""
+                print(T.cmds)
+                if cv.validate(T.cmds):
+                    print(executor.execute(T.cmds))
+                    print("------------")
+                time.sleep(8)
         except Exception as e:
             print(f"[Error] {e}")

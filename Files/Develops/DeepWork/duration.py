@@ -7,9 +7,12 @@ class DurationList:
     def __init__(self):
         self._ls = []
 
-    def add(self, duration, index:int):
+    def add(self, duration, index: int, total_duration = False):
         duration = self.Duration(duration)
-        if not self._ls:
+        if duration < DurationList.Duration.MIN_DURATION:
+                raise ValueError(
+                    f"Duration cannot be zero or negetive (+{DurationList.Duration.MIN_DURATION})")
+        if not self._ls or total_duration:
             self._ls.append(str(duration))
             self._ls.append(f"~{duration}")
         else:
@@ -18,19 +21,24 @@ class DurationList:
             tot = self.Duration(self._ls[len(self._ls) - 1][1:]) + duration
             self._ls.pop()
             self._ls.insert(index, str(duration))
-            if tot > self.Duration.MAX_DURATION:
+            if self.Duration(tot) > self.Duration.MAX_DURATION:
                 raise ValueError(f"You cannot work over 24 hours: {tot}")
             self._ls.append(f"~{tot}")
 
-    def pop(self):
+    def pop(self, index = -2):
         if self.isEmpty():
             raise IndexError("There is no deepwork record for this date...")
         elif len(self._ls) == 2:
+            poped_item = self._ls[0]
             self._ls = []
+            return poped_item
+        elif index == -1 or index == len(self._ls) - 1:
+            raise IndexError(f"index can not be: {index}")
         else:
-            poped_item = self.Duration(self._ls.pop(-2))
+            poped_item = self.Duration(self._ls.pop(index))
             tot = poped_item - self.Duration(self._ls[len(self._ls) - 1][1:])
             self._ls[len(self._ls) - 1] = f"~{tot}"
+            return poped_item
 
     @classmethod
     def from_list(cls, data):
@@ -63,7 +71,7 @@ class DurationList:
 
     @property
     def get_total_duration(self):
-        return self.__getitem__(-1)
+        return self.__getitem__(-1)[1:]
 
     # ================================================= Duration class
 
@@ -80,10 +88,12 @@ class DurationList:
         def __init__(self, duration="0:00"):
 
             if not isinstance(duration, str):
-                raise TypeError("Duration must be a string in 'HH:MM' format")
+                raise TypeError(
+                    "Duration must be a string in 'HH:MM' or 'H:MM' format")
 
             if not re.match(r"^\d{1,2}:\d{2}$", duration):
-                raise ValueError("Duration must be in 'HH:MM' format")
+                raise ValueError(
+                    "Duration must be a string in 'HH:MM' or 'H:MM' format")
 
             hours, minutes = map(int, duration.split(":"))
 
@@ -91,9 +101,7 @@ class DurationList:
                 raise ValueError("Minutes must be less than 60")
 
             self._duration = timedelta(hours=hours, minutes=minutes)
-            if self._duration < self.MIN_DURATION:
-                raise ValueError(
-                    f"Duration cannot be zero or negetive (+{self.MIN_DURATION})")
+            
             if self._duration > self.MAX_DURATION:
                 raise ValueError(
                     f"Duration cannot exceed {self._duration} (24 hours)")
@@ -103,6 +111,7 @@ class DurationList:
             minutes = int(self.total_minutes % 60)
             return f"{hours:02}:{minutes:02}"
 
+        
         def __eq__(self, other):
             if isinstance(other, self.__class__):
                 return self._duration == other._duration
@@ -163,7 +172,12 @@ class DurationList:
             total_minutes = int(td.total_seconds() // 60)
             hours = total_minutes // 60
             minutes = total_minutes % 60
-            return cls(f"{hours}:{minutes:02}")
+            return f"{hours}:{minutes:02}"
+        
+        @classmethod
+        def get_timedelta_obj(cls, duration:str):
+            hours, minutes = map(int, duration.split(":"))
+            return timedelta(hours=hours, minutes=minutes)
 
 # ========================= properties
 
