@@ -1,4 +1,5 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
+from Develops.DeepWork.helpers import Helper
 import re
 
 
@@ -7,11 +8,11 @@ class DurationList:
     def __init__(self):
         self._ls = []
 
-    def add(self, duration, index: int, total_duration = False):
+    def add(self, duration, index: int, total_duration=False):
         duration = self.Duration(duration)
         if duration < DurationList.Duration.MIN_DURATION:
-                raise ValueError(
-                    f"Duration cannot be zero or negetive (+{DurationList.Duration.MIN_DURATION})")
+            raise ValueError(
+                f"Duration cannot be zero or negetive (+{DurationList.Duration.MIN_DURATION})")
         if not self._ls or total_duration:
             self._ls.append(str(duration))
             self._ls.append(f"~{duration}")
@@ -25,7 +26,7 @@ class DurationList:
                 raise ValueError(f"You cannot work over 24 hours: {tot}")
             self._ls.append(f"~{tot}")
 
-    def pop(self, index = -2):
+    def pop(self, index=-2):
         if self.isEmpty():
             raise IndexError("There is no deepwork record for this date...")
         elif len(self._ls) == 2:
@@ -101,7 +102,7 @@ class DurationList:
                 raise ValueError("Minutes must be less than 60")
 
             self._duration = timedelta(hours=hours, minutes=minutes)
-            
+
             if self._duration > self.MAX_DURATION:
                 raise ValueError(
                     f"Duration cannot exceed {self._duration} (24 hours)")
@@ -111,7 +112,6 @@ class DurationList:
             minutes = int(self.total_minutes % 60)
             return f"{hours:02}:{minutes:02}"
 
-        
         def __eq__(self, other):
             if isinstance(other, self.__class__):
                 return self._duration == other._duration
@@ -156,28 +156,14 @@ class DurationList:
         def __add__(self, other):
             if isinstance(other, self.__class__):
                 total = other.duration + self._duration
-                return self.from_timedelta(total)
+                return Helper.formatted_duration(total)
             return NotImplemented
 
         def __sub__(self, other):
             if isinstance(other, self.__class__):
                 total = other.duration - self.duration
-                return self.from_timedelta(total)
+                return Helper.formatted_duration(total)
             return NotImplemented
-
-# ========================= class methods
-
-        @classmethod
-        def from_timedelta(cls, td):
-            total_minutes = int(td.total_seconds() // 60)
-            hours = total_minutes // 60
-            minutes = total_minutes % 60
-            return f"{hours}:{minutes:02}"
-        
-        @classmethod
-        def get_timedelta_obj(cls, duration:str):
-            hours, minutes = map(int, duration.split(":"))
-            return timedelta(hours=hours, minutes=minutes)
 
 # ========================= properties
 

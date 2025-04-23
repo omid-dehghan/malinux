@@ -59,7 +59,7 @@ if __name__ == "__main__":
     db = dateDB()
     cv = CommandValidator()
     executor = CommandExecutor(db)
-    
+
     while True:
         try:
             inp = prompt(">>> ", lexer=Terminal.CommandLexer(),

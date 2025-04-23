@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import datetime, date
 from Develops.DeepWork.duration import DurationList
 from Develops.DeepWork.database import dateDB
+from Develops.DeepWork.database import Helper
+
 
 class CommandValidator:
     MAIN_COMMANDS = ["deepwork",
@@ -51,122 +53,132 @@ class CommandValidator:
             return True  # Allow both positive and negative integers
         except ValueError:
             return False
-    
+
     @property
     def cmds(self) -> list:
         return self._cmds
 
+
 class CommandExecutor:
 
-    def __init__(self, db:dateDB):
+    def __init__(self, db: dateDB):
         self._db = db
 
     def execute(self, cmds):
         self.setCommands(cmds)
-        if self.command_exists(1) and CommandValidator.is_date(self.cmds[1]):
-            return self.date_related_commands()
-        elif self.len_commands > 2:
-            return self.greater_than_two_commands()
-        elif len(self.cmds) == 2:
-            return self.two_layer_command()
-        elif len(self.cmds) == 1:
-            return self.one_layer_command()  
+        if self.cmds[0] == "deepwork":
+            if self.command_exists(1) and CommandValidator.is_date(self.cmds[1]):
+                return self.date_related_commands()
+            elif self.len_commands > 2:
+                return self.greater_than_two_commands()
+            elif len(self.cmds) == 2:
+                return self.two_layer_command()
+            else:
+                return "command not found"
         else:
-            return "command not found"
-    
+            return f"command_not_found: <{self.cmds[0]}>: command not found"
+
     def one_layer_command(self):
         if self.cmds[0] == "deepwork":
             raise IncompleteCommandException(self.cmds[0])
-    
+
     def two_layer_command(self):
         # pop commands
-        if self.cmds[0] == "deepwork":
-            cmd = self.cmds[1]
-            if cmd == "pop":
-                self.db.pop()
-                return self.db.get_today_data()
-            elif cmd == "popall":
-                self.db.pop_all()
-                return self.db.get_today_data()
-            elif cmd == "today":
-                return self.db.get_today_data()
-            elif cmd == "total":
-                return self.db.get("total")
-            elif cmd == "retotal":
-                return self.db.reset_total()
-            elif CommandValidator.is_duration(cmd):
-                self.db.add(cmd)
-                return self.db.get_today_data()
-            else:
-                return "command not found"
-            
- 
+        cmd = self.cmds[1]
+        if cmd == "pop":
+            self.db.pop()
+            return self.db.get_today_data()
+        elif cmd == "popall":
+            self.db.pop_all()
+            return self.db.get_today_data()
+        elif cmd == "today":
+            return self.db.get_today_data()
+        elif cmd == "total":
+            return self.db.get("total")
+        elif cmd == "retotal":
+            return self.db.reset_total()
+        elif CommandValidator.is_valid_index(self.cmds[1]):
+            return self.db.get_info(int(self.cmds[1]))
+        elif CommandValidator.is_duration(cmd):
+            self.db.add(cmd)
+            return self.db.get_today_data()
+        else:
+            return f"command_not_found: <{self.cmds[1]}>: command not found"
+
     def date_related_commands(self):
-        if self.cmds[0] == "deepwork":
-            # get data
-            if CommandValidator.is_date(self.cmds[1]) and not self.command_exists(2):
-                return self.db.get(self.cmds[1])
-            # single duration append
-            elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and not self.command_exists(3):
-                self.db.add(target_date=self.cmds[1], duration=self.cmds[2])
-                return self.db.get(self.cmds[1])
-            # single duration insert
-            elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and CommandValidator.is_valid_index(self.cmds[3]):
-                self.db.add(target_date=self.cmds[1],duration=self.cmds[2], index=int(self.cmds[3]))
-                return self.db.get(self.cmds[1])
-            # single duration pop
-            elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop":
-                self.db.pop(target_date=self.cmds[1])
-                return self.db.get(self.cmds[1])
-            # single pop indexed
-            elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and CommandValidator.is_valid_index(self.cmds[3]):
-                self.db.pop(int(self.cmds[3]))
-                return self.db.get(self.cmds[1]) 
-            # pop all 
-            elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "popall":
-                self.db.pop_all(target_date=self.cmds[1])
-                return self.db.get(self.cmds[1])
-            # list append
-            elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "list" and self.command_exists(3):
-                self.db.add_list(self.cmds[3:], target_date=self.cmds[1])
-                return self.db.get(self.cmds[1])
-            else:
-                return "command not found"
-                
-    
+        # get data
+        if CommandValidator.is_date(self.cmds[1]) and not self.command_exists(2):
+            return self.db.get(self.cmds[1])
+        # single duration append
+        elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and not self.command_exists(3):
+            self.db.add(target_date=self.cmds[1], duration=self.cmds[2])
+            return self.db.get(self.cmds[1])
+        # single duration insert
+        elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and CommandValidator.is_valid_index(self.cmds[3]):
+            self.db.add(
+                target_date=self.cmds[1], duration=self.cmds[2], index=int(self.cmds[3]))
+            return self.db.get(self.cmds[1])
+        # single duration pop
+        elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop":
+            self.db.pop(target_date=self.cmds[1])
+            return self.db.get(self.cmds[1])
+        # single pop indexed
+        elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and CommandValidator.is_valid_index(self.cmds[3]):
+            self.db.pop(int(self.cmds[3]))
+            return self.db.get(self.cmds[1])
+        # pop all
+        elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "popall":
+            self.db.pop_all(target_date=self.cmds[1])
+            return self.db.get(self.cmds[1])
+        # list append
+        elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "list" and self.command_exists(3):
+            self.db.add_list(self.cmds[3:], target_date=self.cmds[1])
+            return self.db.get(self.cmds[1])
+        elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_valid_index(self.cmds[2]) and not self.command_exists(3):
+            return self.db.get_info(start_date=self.cmds[1], index=int(self.cmds[2]))
+        elif CommandValidator.is_date(self.cmds[1]) and self.command_exists(2) and CommandValidator.is_date(self.cmds[2]):
+            start_date, end_date = Helper.sortDates(self.cmds[1], self.cmds[2])
+            return self.db.get_info(start_date=end_date, end_date=start_date)
+        else:
+            return "command not found"
+
     def greater_than_two_commands(self):
         if self.command_exists(2) and self.cmds[1] == "list":
             self.db.add_list(self.cmds[2:])
             return self.db.get_today_data()
-        
+
         elif CommandValidator.is_duration(self.cmds[1]) and CommandValidator.is_valid_index(self.cmds[2]):
             self.db.add(self.cmds[1], index=int(self.cmds[2]))
             return self.db.get_today_data()
-        
+
         elif self.cmds[1] == "pop" and CommandValidator.is_valid_index(self.cmds[2]):
             self.db.pop(int(self.cmds[2]))
-            return self.db.get_today_data() 
-        
+            return self.db.get_today_data()
+
         else:
             return "command not found"
-    
+
     def command_exists(self, index):
         return self.len_commands > index
-    
-    def setCommands(self, cmds:list):
+
+    def setCommands(self, cmds: list):
+        for i in range(len(cmds)):
+            if cmds[i] == "today":
+                cmds[i] = str(date.today())
         self._cmds = cmds
 
     @property
     def db(self):
         return self._db
-    
+
     @property
     def len_commands(self):
         return len(self.cmds)
-    
+
     @property
     def cmds(self):
         return self._cmds
+
 
 class CommandExceptions(Exception):
     """raised when there is some problem command"""
