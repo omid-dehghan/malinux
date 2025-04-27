@@ -10,7 +10,7 @@ This project became my start. I wanted to put it on GitHub so others could also 
 How It Works
 This project uses a simple list-based data structure to help you track your deep work sessions. It stores your data in a .json file that’s automatically created on your desktop. You can interact with it using terminal-style commands.
 
-Available Commands
+Available Commands (open this in code mode)
 >>> deepwork HH:MM
 append a single deep work session duration.
 Example:
@@ -80,3 +80,20 @@ Example:
 Clear all durations from the list.
 Example:
 >>>  deepwork 2025-04-18 list 0:30 1:30
+
+>>>  deepwork [datetime-%Y-%m-%d] [datetime-%Y-%m-%d]
+Bring up statistics between two dates.
+Example:
+>>>  deepwork 2025-04-18 2020-04-18
+
+>>>  deepwork [datetime-%Y-%m-%d] today
+Bring up statistics between a date and today.
+note: you can also enter command like this:
+>>> deepwork today [datetime-%Y-%m-%d]
+Example:
+>>>  deepwork 2025-04-18 today
+
+>>>  deepwork N
+Bring up statistics N days ago.
+Example:
+>>>  deepwork 10
