@@ -32,11 +32,26 @@ class Helper:
         return str(day)
 
     @staticmethod
-    def date_minus_days(day: str, num: int):
+    def next_day(day: str):
         day = Helper.to_date(
             day)
-        day -= timedelta(days=num)
+        day += timedelta(days=1)
         return str(day)
+
+    @staticmethod
+    def date_minus_days(date: str, num: int):
+        date = Helper.to_date(
+            date)
+        date -= timedelta(days=num)
+        return str(date)
+
+    @staticmethod
+    def date_minus_date(date1: str, date2: str):
+        date1 = Helper.to_date(
+            date1)
+        date2 = Helper.to_date(
+            date2)
+        return date2 - date1 + timedelta(days=1)
 
     @staticmethod
     def info(start_date, end_date, recorded_dates, total_days, total):
@@ -57,3 +72,11 @@ class Helper:
         if isinstance(date2, str):
             date2 = Helper.to_date(date2)
         return (str(date1), str(date2)) if date1 <= date2 else (str(date2), str(date1))
+
+    @staticmethod
+    def earlier_date(date1, date2):
+        if isinstance(date1, str):
+            date1 = Helper.to_date(date1)
+        if isinstance(date2, str):
+            date2 = Helper.to_date(date2)
+        return str(date1) if date1 <= date2 else str(date2)

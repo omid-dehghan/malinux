@@ -94,7 +94,7 @@ class CommandExecutor:
         elif cmd == "today":
             return self.db.get_today_data()
         elif cmd == "total":
-            return self.db.get("total")
+            return self.db.get_info()
         elif cmd == "retotal":
             return self.db.reset_total()
         elif CommandValidator.is_valid_index(self.cmds[1]):
@@ -138,7 +138,7 @@ class CommandExecutor:
             return self.db.get_info(start_date=self.cmds[1], index=int(self.cmds[2]))
         elif CommandValidator.is_date(self.cmds[1]) and self.command_exists(2) and CommandValidator.is_date(self.cmds[2]):
             start_date, end_date = Helper.sortDates(self.cmds[1], self.cmds[2])
-            return self.db.get_info(start_date=end_date, end_date=start_date)
+            return self.db.get_info(start_date=start_date, end_date=end_date)
         else:
             return "command not found"
 
