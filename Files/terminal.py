@@ -1,8 +1,10 @@
 from prompt_toolkit import prompt
 from prompt_toolkit.lexers import Lexer
 from prompt_toolkit.styles import Style
-from Develops.DeepWork.database import dateDB
+from Develops.DeepWork.database import Database, DataStorage
+from Develops.DeepWork.analyzer import DataAnalyzer
 from commands import CommandValidator, CommandExecutor
+import os
 
 
 class Terminal:
@@ -55,10 +57,14 @@ class Terminal:
 
 
 if __name__ == "__main__":
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    file_path = os.path.join(desktop_path, "deepwork.json")
     T = Terminal()
-    db = dateDB()
+    ds = DataStorage(file_path)
+    db = Database(ds)
+    da = DataAnalyzer(db)
     cv = CommandValidator()
-    executor = CommandExecutor(db)
+    executor = CommandExecutor(db, da)
 
     while True:
         try:

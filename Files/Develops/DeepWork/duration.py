@@ -34,7 +34,7 @@ class DurationList:
             self._ls = []
             return poped_item
         elif index == -1 or index == len(self._ls) - 1:
-            raise IndexError(f"index can not be: {index}")
+            raise IndexError(f"index cannot be: {index}")
         else:
             poped_item = self.Duration(self._ls.pop(index))
             tot = poped_item - self.Duration(self._ls[len(self._ls) - 1][1:])

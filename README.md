@@ -29,7 +29,7 @@ Example:
 >>>  deepwork pop N
 Remove a recorded duration from the list with index N.
 Example:
->>>  deepwork 0020 1
+>>>  deepwork 00:20 1
 
 >>>  deepwork pop
 Remove the last recorded duration from the list.
@@ -80,6 +80,8 @@ Example:
 Clear all durations from the list.
 Example:
 >>>  deepwork 2025-04-18 list 0:30 1:30
+
+** statistics:
 
 >>>  deepwork [datetime-%Y-%m-%d] [datetime-%Y-%m-%d]
 Bring up statistics between two dates.
