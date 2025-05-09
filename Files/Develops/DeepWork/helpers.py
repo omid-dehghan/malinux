@@ -1,8 +1,13 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 
 
 class Helper:
 
+    @staticmethod
+    def first_recorded_date(data):
+        dates = [d for d in data.keys() if d != "total"]
+        return min(dates, default=str(date.today()), key=Helper.to_date)
+    
     @staticmethod
     def formatted_duration(td: timedelta):
         hours, minutes = Helper.from_timedelta(td)
@@ -19,7 +24,11 @@ class Helper:
         hours = total_minutes // 60
         minutes = total_minutes % 60
         return hours, minutes
-
+    
+    @staticmethod
+    def timedelta_to_min(td: timedelta):
+        return int(td.total_seconds()//60)
+    
     @staticmethod
     def to_date(date: str):
         return datetime.strptime(date, '%Y-%m-%d').date()

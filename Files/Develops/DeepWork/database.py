@@ -62,14 +62,30 @@ class Database:
         self.data.pop("total", None)
         self.initialize_total()
         return self.data["total"]
-    
+
+    def get_dates_and_durations(self):
+        dates = []
+        durations = []
+        pointer = Helper.first_recorded_date(self.get_data())
+        while Helper.to_date(pointer) <= Helper.to_date(str(date.today())):
+            if pointer != "total":
+                dates.append(pointer)
+                if pointer not in self.data or self.data[pointer].isEmpty():
+                    durations.append(Helper.timedelta_to_min(
+                        Helper.dur_timedelta_obj("00:00")))
+                else:
+                    durations.append(Helper.timedelta_to_min(
+                        Helper.dur_timedelta_obj(self.data[pointer].get_total_duration)))
+            pointer = Helper.next_day(pointer)
+        return dates, durations
+
     def get(self, target_date=None):
         if target_date is None:
             target_date = str(date.today())
         if target_date in self.data:
             return self.data[target_date]
         return f"There is no record for this date: {target_date}"
-    
+
     def get_data(self):
         return self.data
 

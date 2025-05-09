@@ -2,13 +2,10 @@ from Develops.DeepWork.helpers import Helper
 from Develops.DeepWork.database import Database
 from datetime import date
 
+
 class DataAnalyzer:
     def __init__(self, db: Database):
         self.db = db
-
-    def first_recorded_date(self):
-        dates = [d for d in self.db.get_data().keys() if d != "total"]
-        return min(dates, default=str(date.today()), key=Helper.to_date)
 
     def get_info(self, index=None, start_date=None, end_date=str(date.today())):
         if index is not None:
@@ -16,7 +13,7 @@ class DataAnalyzer:
                 raise ValueError("Index should be >= 1")
             start_date = Helper.date_minus_days(end_date, index - 1)
         elif start_date is None:
-            start_date = self.first_recorded_date()
+            start_date = Helper.first_recorded_date(self.db.get_data())
         return Helper.info(*self.get_records(start_date, end_date))
 
     def get_records(self, start_date, end_date):

@@ -1,11 +1,6 @@
 from prompt_toolkit import prompt
 from prompt_toolkit.lexers import Lexer
 from prompt_toolkit.styles import Style
-from Develops.DeepWork.database import Database, DataStorage
-from Develops.DeepWork.analyzer import DataAnalyzer
-from commands import CommandValidator, CommandExecutor
-import os
-
 
 class Terminal:
     def __init__(self):
@@ -56,25 +51,3 @@ class Terminal:
             return get_tokens
 
 
-if __name__ == "__main__":
-    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    file_path = os.path.join(desktop_path, "deepwork.json")
-    T = Terminal()
-    ds = DataStorage(file_path)
-    db = Database(ds)
-    da = DataAnalyzer(db)
-    cv = CommandValidator()
-    executor = CommandExecutor(db, da)
-
-    while True:
-        try:
-            inp = prompt(">>> ", lexer=Terminal.CommandLexer(),
-                         style=Terminal.style).strip()
-            if not inp:
-                continue
-            T.setInput(inp)
-            out = ""
-            if cv.validate(T.cmds):
-                print(executor.execute(T.cmds))
-        except Exception as e:
-            print(f"[Error] {e}")

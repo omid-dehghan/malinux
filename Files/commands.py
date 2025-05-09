@@ -2,6 +2,7 @@ from datetime import datetime, date
 from Develops.DeepWork.duration import DurationList
 from Develops.DeepWork.database import Database
 from Develops.DeepWork.analyzer import DataAnalyzer
+from Develops.DeepWork.chart import Chart
 from Develops.DeepWork.database import Helper
 
 
@@ -12,7 +13,8 @@ class CommandValidator:
                      "list",
                      "today",
                      "total",
-                     "retotal"
+                     "retotal",
+                     "barchart"
                      ]
 
     def __init__(self):
@@ -62,9 +64,10 @@ class CommandValidator:
 
 class CommandExecutor:
 
-    def __init__(self, db: Database, da: DataAnalyzer):
+    def __init__(self, db: Database, da: DataAnalyzer, ch:Chart):
         self._db = db
         self._da = da
+        self._ch = ch
 
     def execute(self, cmds):
         self.setCommands(cmds)
@@ -105,6 +108,8 @@ class CommandExecutor:
             return self.da.get_info()
         elif CommandValidator.is_valid_index(self.cmds[1]):
             return self.da.get_info(int(self.cmds[1]))
+        elif cmd == "barchart":
+            self.ch.bar_chart()
         else:
             return f"command_not_found: <{self.cmds[1]}>: command not found"
 
@@ -176,6 +181,9 @@ class CommandExecutor:
     @property
     def da(self):
         return self._da
+    @property
+    def ch(self):
+        return self._ch
 
     @property
     def len_commands(self):
