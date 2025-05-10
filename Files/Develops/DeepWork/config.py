@@ -5,6 +5,13 @@ class Config:
     def __init__(self, path=r"Files\Develops\Deepwork\config.json"):
         self.path = path
         self.data = {}
+        self.defaults = {
+            "filepath": os.path.join(os.path.expanduser("~"), "Desktop"),
+            "filename": "deepwork"
+        }
+        if not os.path.exists(self.path):
+            self.save(self.defaults)
+        self.config = self.load()
         self.load()
 
     def load(self):
