@@ -10,3 +10,6 @@ __pycache__/
 .vscode/
 *.log
 .DS_Store
+
+# Project-specific
+config.json
