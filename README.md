@@ -10,6 +10,11 @@ This project became my start. I wanted to put it on GitHub so others could also 
 How It Works
 This project uses a simple list-based data structure to help you track your deep work sessions. It stores your data in a .json file that’s automatically created on your desktop. You can interact with it using terminal-style commands.
 
+
+## Project Status
+This project is a work in progress. Some features are incomplete or experimental. If you encounter bugs, please report them as issues, and we will address them when possible.
+
+
 Available Commands (open this in code mode)
 >>> deepwork HH:MM
 append a single deep work session duration.

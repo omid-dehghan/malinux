@@ -1,4 +1,4 @@
-from Develops.DeepWork.duration import DurationList
+from Develops.Deepwork.duration import DurationList
 import os
 import json
 

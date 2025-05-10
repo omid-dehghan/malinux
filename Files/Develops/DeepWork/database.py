@@ -1,6 +1,6 @@
-from Develops.DeepWork.helpers import Helper
-from Develops.DeepWork.duration import DurationList
-from Develops.DeepWork.storage import DataStorage
+from Develops.Deepwork.helpers import Helper
+from Develops.Deepwork.duration import DurationList
+from Develops.Deepwork.storage import DataStorage
 from datetime import date
 
 

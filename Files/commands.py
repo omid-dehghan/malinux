@@ -1,9 +1,10 @@
 from datetime import datetime, date
-from Develops.DeepWork.duration import DurationList
-from Develops.DeepWork.database import Database
-from Develops.DeepWork.analyzer import DataAnalyzer
-from Develops.DeepWork.chart import Chart
-from Develops.DeepWork.database import Helper
+from Develops.Deepwork.duration import DurationList
+from Develops.Deepwork.database import Database
+from Develops.Deepwork.analyzer import DataAnalyzer
+from Develops.Deepwork.chart import Chart
+from Develops.Deepwork.database import Helper
+from Develops.Deepwork.config import Config
 
 
 class CommandValidator:
@@ -14,7 +15,11 @@ class CommandValidator:
                      "today",
                      "total",
                      "retotal",
-                     "barchart"
+                     "barchart",
+                     "set",
+                     "filename",
+                     "filepath",
+                     "hello"
                      ]
 
     def __init__(self):
@@ -64,30 +69,41 @@ class CommandValidator:
 
 class CommandExecutor:
 
-    def __init__(self, db: Database, da: DataAnalyzer, ch:Chart):
+    def __init__(self, db: Database, da: DataAnalyzer, ch: Chart, config: Config):
         self._db = db
         self._da = da
         self._ch = ch
+        self._config = config
 
     def execute(self, cmds):
         self.setCommands(cmds)
         if self.cmds[0] == "deepwork":
-            if self.command_exists(1) and CommandValidator.is_date(self.cmds[1]):
+            if self.command_exists(1) and self.cmds[1].lower() == "set":
+                return self.config_related_commands()
+            elif self.command_exists(1) and CommandValidator.is_date(self.cmds[1]):
                 return self.date_related_commands()
             elif self.len_commands > 2:
                 return self.greater_than_two_commands()
             elif len(self.cmds) == 2:
-                return self.two_layer_command()
+                return self.two_layer_commands()
             else:
                 return "command not found"
         else:
             return f"command_not_found: <{self.cmds[0]}>: command not found"
-
+    
     def one_layer_command(self):
         if self.cmds[0] == "deepwork":
             raise IncompleteCommandException(self.cmds[0])
+        
+    def config_related_commands(self):
+        if self.command_exists(1) and self.cmds[1] == "set" and self.command_exists(2):
+            if self.cmds[2] == "filepath" and self.command_exists(3):
+                self.config.set("filepath", self.cmds[3])
+            elif self.cmds[2] == "filename" and self.command_exists(3):
+                self.config.set("filepath", self.cmds[3])
 
-    def two_layer_command(self):
+                
+    def two_layer_commands(self):
         # pop commands
         cmd = self.cmds[1]
         if cmd == "pop":
@@ -119,7 +135,8 @@ class CommandExecutor:
             return self.db.get(self.cmds[1])
         # single duration append
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and not self.command_exists(3):
-            self.db.add_duration(target_date=self.cmds[1], duration=self.cmds[2])
+            self.db.add_duration(
+                target_date=self.cmds[1], duration=self.cmds[2])
             return self.db.get(self.cmds[1])
         # single duration insert
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and CommandValidator.is_valid_index(self.cmds[3]):
@@ -132,8 +149,9 @@ class CommandExecutor:
             return self.db.get(self.cmds[1])
         # single pop indexed
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and CommandValidator.is_valid_index(self.cmds[3]):
-            self.db.pop_duration(target_date= self.cmds[1],index=int(self.cmds[3]))
-            return self.db.get(self.cmds[1]) 
+            self.db.pop_duration(
+                target_date=self.cmds[1], index=int(self.cmds[3]))
+            return self.db.get(self.cmds[1])
         # pop all
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "popall":
             self.db.pop_all_duration(target_date=self.cmds[1])
@@ -177,13 +195,19 @@ class CommandExecutor:
 
     @property
     def db(self):
-        return self._db 
+        return self._db
+
     @property
     def da(self):
         return self._da
+
     @property
     def ch(self):
         return self._ch
+    
+    @property
+    def config(self):
+        return self._config
 
     @property
     def len_commands(self):

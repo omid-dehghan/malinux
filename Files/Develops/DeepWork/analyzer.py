@@ -1,5 +1,5 @@
-from Develops.DeepWork.helpers import Helper
-from Develops.DeepWork.database import Database
+from Develops.Deepwork.helpers import Helper
+from Develops.Deepwork.database import Database
 from datetime import date
 
 
