@@ -19,23 +19,29 @@ class CommandValidator:
                      "set",
                      "filename",
                      "filepath",
-                     "hello"
+                     "alldata",
+                     "clear",
+                     "alldata"
                      ]
 
     def __init__(self):
         pass
 
     def validate(self, cmds):
-        for cmd in cmds:
-            if not (
-                cmd in self.MAIN_COMMANDS
-                or CommandValidator.is_date(cmd)
-                or CommandValidator.is_duration(cmd)
-                or CommandValidator.is_valid_index(cmd)
-            ):
-                raise CommandNotFoundException(cmd)
-        self._cmds = cmds
-        return True
+        if cmds[1] == "set" and (cmds[2] == "filename" or cmds[2] == "filepath"):
+            self._cmds = cmds
+            return True
+        else:
+            for cmd in cmds:
+                if not (
+                    cmd in self.MAIN_COMMANDS
+                    or CommandValidator.is_date(cmd)
+                    or CommandValidator.is_duration(cmd)
+                    or CommandValidator.is_valid_index(cmd)
+                ):
+                    raise CommandNotFoundException(cmd)
+            self._cmds = cmds
+            return True
 
     @staticmethod
     def is_duration(token):
@@ -98,9 +104,9 @@ class CommandExecutor:
     def config_related_commands(self):
         if self.command_exists(1) and self.cmds[1] == "set" and self.command_exists(2):
             if self.cmds[2] == "filepath" and self.command_exists(3):
-                self.config.set("filepath", self.cmds[3])
+                return self.config.set("filepath", self.cmds[3])
             elif self.cmds[2] == "filename" and self.command_exists(3):
-                self.config.set("filepath", self.cmds[3])
+                return self.config.set("filename", self.cmds[3])
 
                 
     def two_layer_commands(self):
@@ -116,6 +122,8 @@ class CommandExecutor:
             return self.db.get_today_data()
         elif cmd == "retotal":
             return self.db.reset_total()
+        elif cmd == "alldata":
+            return self.db.get_data()
         elif CommandValidator.is_duration(cmd):
             self.db.add_duration(cmd)
             return self.db.get_today_data()
@@ -181,6 +189,9 @@ class CommandExecutor:
             self.db.pop_duration(int(self.cmds[2]))
             return self.db.get_today_data()
 
+        elif self.cmds[1] == "clear" and self.cmds[2] == "alldata":
+            self.db.clear_alldata()
+            return "Done"
         else:
             return "command not found"
 

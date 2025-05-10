@@ -11,7 +11,7 @@ import threading
 class DeepWorkApp:
     def __init__(self):
         self.config = Config(r"Files\Develops\Deepwork\config.json")
-        file_path = f"{self.config.get("filepath", "C:\\Users\\Green\\Desktop")}{self.config.get("filename", "\\deepwork")}.json"
+        file_path = f"{self.config.get('filepath', 'C:/Users/Green/Desktop')}{self.config.get('filename', '/deepwork')}.json"
         # Initialize components
         self.T = Terminal()
         self.ds = DataStorage(file_path)
@@ -38,7 +38,6 @@ class DeepWorkApp:
     def start(self):
         threading.Thread(target=self.run_cli, daemon=True).start()
         self.ch.bar_chart()
-        
 
 
 if __name__ == "__main__":

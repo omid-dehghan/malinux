@@ -28,11 +28,13 @@ class Config:
             if self.path_exists(value):
                 self.data[key] = value
                 self.save()
+                return self.data[key]
             else:
                 raise Exception(f"The path {value} does not exist.")
         elif key == "filename":
             self.data[key] = value
             self.save()
+            return self.data[key]
 
 
     def path_exists(self, path):

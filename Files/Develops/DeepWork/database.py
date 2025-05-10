@@ -85,6 +85,10 @@ class Database:
         if target_date in self.data:
             return self.data[target_date]
         return f"There is no record for this date: {target_date}"
+    
+    def clear_alldata(self):
+        self.data = {}
+        self.save()
 
     def get_data(self):
         return self.data
