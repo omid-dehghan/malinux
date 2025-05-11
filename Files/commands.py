@@ -14,21 +14,21 @@ class CommandValidator:
                      "list",
                      "today",
                      "total",
-                     "retotal",
                      "barchart",
                      "set",
                      "filename",
-                     "filepath",
+                     "path",
                      "alldata",
                      "clear",
-                     "alldata"
+                     "get",
+                     "filepath"
                      ]
 
     def __init__(self):
         pass
 
     def validate(self, cmds):
-        if cmds[1] == "set" and (cmds[2] == "filename" or cmds[2] == "filepath"):
+        if cmds[1] == "set" and (cmds[2] == "filename" or cmds[2] == "path"):
             self._cmds = cmds
             return True
         else:
@@ -75,16 +75,18 @@ class CommandValidator:
 
 class CommandExecutor:
 
-    def __init__(self, db: Database, da: DataAnalyzer, ch: Chart, config: Config):
+    def __init__(self, db: Database, da: DataAnalyzer, ch: Chart, config: Config, ds
+                ):
         self._db = db
         self._da = da
         self._ch = ch
         self._config = config
+        self._ds = ds
 
     def execute(self, cmds):
         self.setCommands(cmds)
         if self.cmds[0] == "deepwork":
-            if self.command_exists(1) and self.cmds[1].lower() == "set":
+            if self.command_exists(1) and (self.cmds[1].lower() == "set" or self.cmds[1].lower() == "get"):
                 return self.config_related_commands()
             elif self.command_exists(1) and CommandValidator.is_date(self.cmds[1]):
                 return self.date_related_commands()
@@ -96,37 +98,34 @@ class CommandExecutor:
                 return "command not found"
         else:
             return f"command_not_found: <{self.cmds[0]}>: command not found"
-    
+
     def one_layer_command(self):
         if self.cmds[0] == "deepwork":
             raise IncompleteCommandException(self.cmds[0])
-        
+
     def config_related_commands(self):
         if self.command_exists(1) and self.cmds[1] == "set" and self.command_exists(2):
-            if self.cmds[2] == "filepath" and self.command_exists(3):
-                return self.config.set("filepath", self.cmds[3])
+            if self.cmds[2] == "path" and self.command_exists(3):
+                return self.config.set("path", self.cmds[3])
             elif self.cmds[2] == "filename" and self.command_exists(3):
                 return self.config.set("filename", self.cmds[3])
-
-                
+        elif self.command_exists(1) and self.cmds[1] == "get" and self.command_exists(2):
+            if self.cmds[2] == "filepath" and not self.command_exists(3):
+                return self.config.get_filepath()
+            
     def two_layer_commands(self):
         # pop commands
         cmd = self.cmds[1]
         if cmd == "pop":
-            self.db.pop_duration()
-            return self.db.get_today_data()
+            return self.db.perform_action(cmd)
         elif cmd == "popall":
-            self.db.pop_all_duration()
-            return self.db.get_today_data()
+            return self.db.perform_action(cmd)
         elif cmd == "today":
             return self.db.get_today_data()
-        elif cmd == "retotal":
-            return self.db.reset_total()
         elif cmd == "alldata":
-            return self.db.get_data()
+            return self.db.perform_action(cmd)
         elif CommandValidator.is_duration(cmd):
-            self.db.add_duration(cmd)
-            return self.db.get_today_data()
+            return self.db.perform_action("add", cmd)
         # Analyzes
         elif cmd == "total":
             return self.da.get_info()
@@ -140,34 +139,28 @@ class CommandExecutor:
     def date_related_commands(self):
         # get data
         if CommandValidator.is_date(self.cmds[1]) and not self.command_exists(2):
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("get", self.cmds[1])
         # single duration append
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and not self.command_exists(3):
-            self.db.add_duration(
-                target_date=self.cmds[1], duration=self.cmds[2])
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("add",
+                                          self.cmds[1], self.cmds[2])
         # single duration insert
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and CommandValidator.is_valid_index(self.cmds[3]):
-            self.db.add_duration(
-                target_date=self.cmds[1], duration=self.cmds[2], index=int(self.cmds[3]))
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("add",
+                                          self.cmds[1], self.cmds[2], int(self.cmds[3]))
         # single duration pop
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and not self.command_exists(3):
-            self.db.pop_duration(target_date=self.cmds[1])
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("pop", self.cmds[1])
         # single pop indexed
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and CommandValidator.is_valid_index(self.cmds[3]):
-            self.db.pop_duration(
-                target_date=self.cmds[1], index=int(self.cmds[3]))
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("pop",
+                                          self.cmds[1], int(self.cmds[3]))
         # pop all
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "popall":
-            self.db.pop_all_duration(target_date=self.cmds[1])
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("popall", self.cmds[1])
         # list append
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "list" and self.command_exists(3):
-            self.db.add_list(self.cmds[3:], target_date=self.cmds[1])
-            return self.db.get(self.cmds[1])
+            return self.db.perform_action("addlist", self.cmds[3:], self.cmds[1])
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_valid_index(self.cmds[2]) and not self.command_exists(3):
             return self.da.get_info(start_date=self.cmds[1], index=int(self.cmds[2]))
         elif CommandValidator.is_date(self.cmds[1]) and self.command_exists(2) and CommandValidator.is_date(self.cmds[2]):
@@ -178,20 +171,22 @@ class CommandExecutor:
 
     def greater_than_two_commands(self):
         if self.command_exists(2) and self.cmds[1] == "list":
-            self.db.add_list(self.cmds[2:])
-            return self.db.get_today_data()
+            return self.db.perform_action("addlist", self.cmds[2:])
 
         elif CommandValidator.is_duration(self.cmds[1]) and CommandValidator.is_valid_index(self.cmds[2]):
-            self.db.add_duration(self.cmds[1], index=int(self.cmds[2]))
-            return self.db.get_today_data()
+            return self.db.perform_action("add", self.cmds[1], index=int(self.cmds[2]))
 
         elif self.cmds[1] == "pop" and CommandValidator.is_valid_index(self.cmds[2]):
-            self.db.pop_duration(int(self.cmds[2]))
-            return self.db.get_today_data()
+            return self.db.perform_action("pop", int(self.cmds[2]))
 
         elif self.cmds[1] == "clear" and self.cmds[2] == "alldata":
-            self.db.clear_alldata()
-            return "Done"
+            while True:
+                inp = input("Are you sure? [Y/N]")
+                if inp.lower() == "y":
+                    return self.db.perform_action("clearalldata")
+                else:
+                    break
+
         else:
             return "command not found"
 
@@ -216,6 +211,10 @@ class CommandExecutor:
     def ch(self):
         return self._ch
     
+    @property
+    def ds(self):
+        return self._ds
+
     @property
     def config(self):
         return self._config

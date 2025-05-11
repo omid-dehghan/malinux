@@ -3,13 +3,12 @@ from Develops.Deepwork.database import Database
 from matplotlib.animation import FuncAnimation
 from datetime import datetime
 
+
 class Chart:
     def __init__(self, db: Database):
         self.db = db
         self.fig, self.ax = plt.subplots(figsize=(8, 6))
-      
-        
-    
+
     def format_minutes(self, m):
         hours = int(m) // 60
         minutes = int(m) % 60
@@ -33,13 +32,14 @@ class Chart:
         self.ax.set_yticks(locs)
         self.ax.set_yticklabels([self.format_minutes(m) for m in locs])
         self.ax.grid(axis='y')
-        self.ax.bar_label(bars, labels=[self.format_minutes(d) for d in durations], padding=3, fontsize=8)
+        self.ax.bar_label(bars, labels=[self.format_minutes(
+            d) for d in durations], padding=3, fontsize=8)
         self.fig.tight_layout(pad=2.0)
         self.fig.canvas.manager.set_window_title("Deepwork")
-        
+
         self.fig.canvas.draw_idle()  # Redraw canvas
-        
 
     def bar_chart(self, interval=3000):
-        self.ani = FuncAnimation(self.fig, self.update_chart, interval=interval, cache_frame_data=False)
+        self.ani = FuncAnimation(
+            self.fig, self.update_chart, interval=interval, cache_frame_data=False)
         plt.show()

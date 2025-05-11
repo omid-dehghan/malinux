@@ -11,15 +11,17 @@ import threading
 class DeepWorkApp:
     def __init__(self):
         self.config = Config(r"Files\Develops\Deepwork\config.json")
-        file_path = f"{self.config.get('filepath', 'C:/Users/Green/Desktop')}{self.config.get('filename', '/deepwork')}.json"
-        # Initialize components
+        self.initialize_components()
+
+    def initialize_components(self):
         self.T = Terminal()
-        self.ds = DataStorage(file_path)
+        self.ds = DataStorage()
+        self.config.setDataStorageObj(self.ds)
         self.db = Database(self.ds)
         self.da = DataAnalyzer(self.db)
         self.cv = CommandValidator()
         self.ch = Chart(self.db)
-        self.executor = CommandExecutor(self.db, self.da, self.ch, self.config)
+        self.executor = CommandExecutor(self.db, self.da, self.ch, self.config, self.ds)
 
     def run_cli(self):
         """Runs the command-line interface in a background thread."""

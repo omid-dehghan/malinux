@@ -11,6 +11,20 @@ class Database:
 
     def save(self):
         self.storage.save(self.data)
+    
+    def perform_action(self, action, *args):
+        actions = {"add": self.add_duration,
+                   "pop": self.pop_duration,
+                   "popall": self.pop_all_duration,
+                   "today": self.get_today_data,
+                   "addlist": self.add_list,
+                   "clearalldata": self.clear_alldata,
+                   "get": self.get,
+                   "alldata": self.get_data
+                   }
+        result = actions[action](*args)
+        self.reset_total()
+        return result
 
     def initialize_total(self):
         total = Helper.dur_timedelta_obj("00:00")
@@ -35,6 +49,7 @@ class Database:
         self.total_duration("add", duration)
         self.data[target_date].add(duration, index=index)
         self.save()
+        return self.get(target_date)
 
     def add_list(self, durations: list, target_date=str(date.today())):
         if target_date not in self.data:
@@ -42,13 +57,16 @@ class Database:
         for d in durations:
             self.add_duration(d, None, target_date)
         self.save()
+        return self.get(target_date)
 
     def pop_duration(self, index=-2, target_date=str(date.today())):
         if target_date not in self.data or self.data[target_date].isEmpty():
             raise IndexError(f"No valid record for date: {target_date}")
-        pop_item = self.data[target_date].pop(index=index)
-        self.total_duration("sub", str(pop_item))
+        self.data[target_date].pop(index=index)
+        self.reset_total()
+        # self.total_duration("sub", str(pop_item))
         self.save()
+        return self.get(target_date)
 
     def pop_all_duration(self, target_date=str(date.today())):
         if target_date not in self.data or self.data[target_date].isEmpty():
@@ -57,6 +75,7 @@ class Database:
         self.total_duration("sub", self.data[target_date].get_total_duration)
         self.data[target_date] = DurationList()
         self.save()
+        return self.get(target_date)
 
     def reset_total(self):
         self.data.pop("total", None)
@@ -89,6 +108,7 @@ class Database:
     def clear_alldata(self):
         self.data = {}
         self.save()
+        return "Done"
 
     def get_data(self):
         return self.data
