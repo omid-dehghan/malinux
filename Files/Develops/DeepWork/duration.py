@@ -56,6 +56,9 @@ class DurationList:
     def __str__(self):
         return str(self._ls)
 
+    def __repr__(self):
+        return f"{self._ls}\n"
+    
     def __getitem__(self, index):
         if index == len(self._ls) - 1:
             raise IndexError(f"There is no index {index}")

@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class Config:
     def __init__(self, path=r"Files\Develops\Deepwork\config.json"):
         self.path = path
@@ -21,28 +22,25 @@ class Config:
         else:
             self.data = {}
 
-    def save(self):
+    def save(self, config_data=None):
+        if config_data is None:
+            config_data = self.config
         with open(self.path, "w") as f:
-            json.dump(self.data, f, indent=4)
+            json.dump(config_data, f, indent=4)
 
     def get(self, key, default=None):
         return self.data.get(key, default)
 
     def set(self, key, value):
         if key not in self.data:
-            raise Exception("config does not exist.")
-        if key == "filepath":
-            if self.path_exists(value):
-                self.data[key] = value
-                self.save()
-                return self.data[key]
-            else:
-                raise Exception(f"The path {value} does not exist.")
-        elif key == "filename":
-            self.data[key] = value
-            self.save()
-            return self.data[key]
+            raise KeyError(f"'{key}' is not a valid config key.")
 
+        if key == "filepath" and not self.path_exists(value):
+            raise ValueError(f"Invalid path: '{value}' does not exist.")
+
+        self.data[key] = value
+        self.save()
+        return value
 
     def path_exists(self, path):
         return os.path.exists(path)

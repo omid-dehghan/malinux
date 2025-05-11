@@ -51,6 +51,12 @@ it will get today record.
 >>>  deepwork retotal
 reset the total duration.
 
+>>> deepwork alldata
+print all recorded data
+Example:
+{'2025-04-11': ['01:00', '03:00', '~04:00']
+, '2025-04-12': ['00:30', '01:00', '01:30', '02:15', '~05:15']}
+
 >>>  deepwork [datetime-%Y-%m-%d] HH:MM
 append a single deep work session duration to a date.
 Example:
