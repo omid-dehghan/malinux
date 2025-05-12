@@ -15,13 +15,12 @@ class DeepWorkApp:
 
     def initialize_components(self):
         self.T = Terminal()
-        self.ds = DataStorage()
-        self.config.setDataStorageObj(self.ds)
+        self.ds = DataStorage(self.config)
         self.db = Database(self.ds)
         self.da = DataAnalyzer(self.db)
         self.cv = CommandValidator()
         self.ch = Chart(self.db)
-        self.executor = CommandExecutor(self.db, self.da, self.ch, self.config, self.ds)
+        self.executor = CommandExecutor(self.db, self.da, self.config, self.ds, self.ch)
 
     def run_cli(self):
         """Runs the command-line interface in a background thread."""

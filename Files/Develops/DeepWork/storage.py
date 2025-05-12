@@ -4,8 +4,10 @@ import json
 
 
 class DataStorage:
-    def __init__(self):
-        pass
+
+    def __init__(self, config):
+        self._config = config
+        self.setPath(self.config.get_filepath())
 
     def load(self):
         if not os.path.exists(self.path) or os.path.getsize(self.path) == 0:
@@ -28,3 +30,7 @@ class DataStorage:
     @property
     def path(self):
         return self._path
+    
+    @property
+    def config(self):
+        return self._config

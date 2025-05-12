@@ -7,12 +7,15 @@ from datetime import date
 class Database:
     def __init__(self, storage: DataStorage):
         self.storage = storage
+        self.reload()
+    
+    def reload(self):
         self.data = self.storage.load()
 
     def save(self):
         self.storage.save(self.data)
     
-    def perform_action(self, action, *args):
+    def perform_action(self, action, **kargs):
         actions = {"add": self.add_duration,
                    "pop": self.pop_duration,
                    "popall": self.pop_all_duration,
@@ -22,7 +25,7 @@ class Database:
                    "get": self.get,
                    "alldata": self.get_data
                    }
-        result = actions[action](*args)
+        result = actions[action](**kargs)
         self.reset_total()
         return result
 
@@ -35,18 +38,10 @@ class Database:
                 total += Helper.dur_timedelta_obj(val.get_total_duration)
             self.data["total"] = f"~{Helper.formatted_duration(total)}"
         self.save()
-
-    def total_duration(self, action, duration):
-        self.initialize_total()
-        total = Helper.dur_timedelta_obj(self.data["total"][1:])
-        change = Helper.dur_timedelta_obj(duration)
-        total = total + change if action == "add" else total - change
-        self.data["total"] = f"~{Helper.formatted_duration(total)}"
-
+        
     def add_duration(self, duration: str, index=None, target_date=str(date.today())):
         if target_date not in self.data:
             self.data[target_date] = DurationList()
-        self.total_duration("add", duration)
         self.data[target_date].add(duration, index=index)
         self.save()
         return self.get(target_date)
@@ -63,8 +58,6 @@ class Database:
         if target_date not in self.data or self.data[target_date].isEmpty():
             raise IndexError(f"No valid record for date: {target_date}")
         self.data[target_date].pop(index=index)
-        self.reset_total()
-        # self.total_duration("sub", str(pop_item))
         self.save()
         return self.get(target_date)
 
@@ -72,7 +65,6 @@ class Database:
         if target_date not in self.data or self.data[target_date].isEmpty():
             raise IndexError(
                 f"No valid records to pop for date: {target_date}")
-        self.total_duration("sub", self.data[target_date].get_total_duration)
         self.data[target_date] = DurationList()
         self.save()
         return self.get(target_date)

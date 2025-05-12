@@ -1,6 +1,7 @@
 from datetime import datetime, date
 from Develops.Deepwork.duration import DurationList
 from Develops.Deepwork.database import Database
+from Develops.Deepwork.database import DataStorage
 from Develops.Deepwork.analyzer import DataAnalyzer
 from Develops.Deepwork.chart import Chart
 from Develops.Deepwork.database import Helper
@@ -75,8 +76,8 @@ class CommandValidator:
 
 class CommandExecutor:
 
-    def __init__(self, db: Database, da: DataAnalyzer, ch: Chart, config: Config, ds
-                ):
+    def __init__(self, db: Database, da: DataAnalyzer, config: Config, ds: DataStorage, ch: Chart
+                 ):
         self._db = db
         self._da = da
         self._ch = ch
@@ -108,11 +109,15 @@ class CommandExecutor:
             if self.cmds[2] == "path" and self.command_exists(3):
                 return self.config.set("path", self.cmds[3])
             elif self.cmds[2] == "filename" and self.command_exists(3):
-                return self.config.set("filename", self.cmds[3])
-        elif self.command_exists(1) and self.cmds[1] == "get" and self.command_exists(2):
-            if self.cmds[2] == "filepath" and not self.command_exists(3):
-                return self.config.get_filepath()
-            
+                message = self.config.set("filename", self.cmds[3])
+                self.ds.setPath(self.config.get_filepath())
+                self.db.reload()
+                return message
+        elif self.command_exists(1) and self.cmds[1] == "get" and self.command_exists(2) and self.cmds[2] == "filepath" and not self.command_exists(3):
+            return self.config.get_filepath()
+        else:
+            return "command not found"
+
     def two_layer_commands(self):
         # pop commands
         cmd = self.cmds[1]
@@ -125,7 +130,7 @@ class CommandExecutor:
         elif cmd == "alldata":
             return self.db.perform_action(cmd)
         elif CommandValidator.is_duration(cmd):
-            return self.db.perform_action("add", cmd)
+            return self.db.perform_action("add", duration=cmd)
         # Analyzes
         elif cmd == "total":
             return self.da.get_info()
@@ -139,28 +144,28 @@ class CommandExecutor:
     def date_related_commands(self):
         # get data
         if CommandValidator.is_date(self.cmds[1]) and not self.command_exists(2):
-            return self.db.perform_action("get", self.cmds[1])
+            return self.db.perform_action("get", target_date=self.cmds[1])
         # single duration append
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and not self.command_exists(3):
             return self.db.perform_action("add",
-                                          self.cmds[1], self.cmds[2])
+                                          target_date=self.cmds[1], duration=self.cmds[2])
         # single duration insert
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_duration(self.cmds[2]) and CommandValidator.is_valid_index(self.cmds[3]):
             return self.db.perform_action("add",
-                                          self.cmds[1], self.cmds[2], int(self.cmds[3]))
+                                          target_date=self.cmds[1], duration=self.cmds[2], index=int(self.cmds[3]))
         # single duration pop
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and not self.command_exists(3):
-            return self.db.perform_action("pop", self.cmds[1])
+            return self.db.perform_action("pop", target_date=self.cmds[1])
         # single pop indexed
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "pop" and CommandValidator.is_valid_index(self.cmds[3]):
             return self.db.perform_action("pop",
-                                          self.cmds[1], int(self.cmds[3]))
+                                          target_date=self.cmds[1], index=int(self.cmds[3]))
         # pop all
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "popall":
-            return self.db.perform_action("popall", self.cmds[1])
+            return self.db.perform_action("popall", target_date=self.cmds[1])
         # list append
         elif CommandValidator.is_date(self.cmds[1]) and self.cmds[2] == "list" and self.command_exists(3):
-            return self.db.perform_action("addlist", self.cmds[3:], self.cmds[1])
+            return self.db.perform_action("addlist", durations=self.cmds[3:], target_date=self.cmds[1])
         elif CommandValidator.is_date(self.cmds[1]) and CommandValidator.is_valid_index(self.cmds[2]) and not self.command_exists(3):
             return self.da.get_info(start_date=self.cmds[1], index=int(self.cmds[2]))
         elif CommandValidator.is_date(self.cmds[1]) and self.command_exists(2) and CommandValidator.is_date(self.cmds[2]):
@@ -171,13 +176,13 @@ class CommandExecutor:
 
     def greater_than_two_commands(self):
         if self.command_exists(2) and self.cmds[1] == "list":
-            return self.db.perform_action("addlist", self.cmds[2:])
+            return self.db.perform_action("addlist", durations=self.cmds[2:])
 
         elif CommandValidator.is_duration(self.cmds[1]) and CommandValidator.is_valid_index(self.cmds[2]):
-            return self.db.perform_action("add", self.cmds[1], index=int(self.cmds[2]))
+            return self.db.perform_action("add", duration=self.cmds[1], index=int(self.cmds[2]))
 
         elif self.cmds[1] == "pop" and CommandValidator.is_valid_index(self.cmds[2]):
-            return self.db.perform_action("pop", int(self.cmds[2]))
+            return self.db.perform_action("pop", index=int(self.cmds[2]))
 
         elif self.cmds[1] == "clear" and self.cmds[2] == "alldata":
             while True:
@@ -186,7 +191,6 @@ class CommandExecutor:
                     return self.db.perform_action("clearalldata")
                 else:
                     break
-
         else:
             return "command not found"
 
@@ -210,7 +214,7 @@ class CommandExecutor:
     @property
     def ch(self):
         return self._ch
-    
+
     @property
     def ds(self):
         return self._ds

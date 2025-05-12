@@ -1,3 +1,4 @@
+from Develops.Deepwork.database import DataStorage
 import json
 import os
 
@@ -45,8 +46,7 @@ class Config:
 
         self.data[key] = value
         self.save()
-        self.ds.setPath(self.get_filepath())
-        return f"[✓]path changed: {self.get_filepath()}"
+        return f"[✓] path changed: {self.get_filepath()}"
 
     def path_exists(self, path):
         return os.path.exists(path)
@@ -64,10 +64,6 @@ class Config:
 
     def get_filepath(self):
         return f"{self.get_path() + self.get_filename()}.json"
-
-    def setDataStorageObj(self, ds):
-        self._ds = ds
-        self.ds.setPath(self.get_filename())
 
     @property
     def ds(self):
