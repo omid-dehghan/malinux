@@ -42,5 +42,11 @@ class DeepWorkApp:
 
 
 if __name__ == "__main__":
-    app = DeepWorkApp()
-    app.start()
+    try:
+        app = DeepWorkApp()
+        app.start()
+    except Exception as e:
+        print("An error occurred:", e)
+
+        input("Press Enter to exit...")
+        

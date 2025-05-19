@@ -5,6 +5,8 @@ import os
 
 class Config:
     def __init__(self, path=r"Files\Develops\Deepwork\config.json"):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, 'config.json')
         self.path = path
         self.data = {}
         self.defaults = {
