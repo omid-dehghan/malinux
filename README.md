@@ -16,97 +16,98 @@ This project is a work in progress. Some features are incomplete or experimental
 
 
 ## Available Commands (open this in code mode)
+
 ### >>> deepwork HH:MM
 append a single deep work session duration.
 Example:
->>> deepwork 00:20
+### >>> deepwork 00:20
 
->>> deepwork HH:MM N
+### >>> deepwork HH:MM N
 insert a single deep work session duration with index N.
 Example:
->>> deepwork 00:20 1
+### >>> deepwork 00:20 1
 
->>> deepwork list HH:MM HH:MM ...
+### >>> deepwork list HH:MM HH:MM ...
 append multiple deep work durations at once.
 Example:
->>> deepwork list 00:20 01:20 10:00
+### >>> deepwork list 00:20 01:20 10:00
 
->>>  deepwork pop N
+### >>>  deepwork pop N
 Remove a recorded duration from the list with index N.
 Example:
->>>  deepwork 00:20 1
+### >>>  deepwork 00:20 1
 
->>>  deepwork pop
+### >>>  deepwork pop
 Remove the last recorded duration from the list.
 
->>>  deepwork popall
+### >>>  deepwork popall
 Clear all durations from the list.
 
->>>  deepwork total
+### >>>  deepwork total
 total duration that you worked overall.
 
->>>  deepwork today
+### >>>  deepwork today
 it will get today record.
 
->>>  deepwork retotal
+### >>>  deepwork retotal
 reset the total duration.
 
->>> deepwork alldata
+### >>> deepwork alldata
 print all recorded data
 Example:
 {'2025-04-11': ['01:00', '03:00', '~04:00']
 , '2025-04-12': ['00:30', '01:00', '01:30', '02:15', '~05:15']}
 
->>>  deepwork [datetime-%Y-%m-%d] HH:MM
+### >>>  deepwork [datetime-%Y-%m-%d] HH:MM
 append a single deep work session duration to a date.
 Example:
->>>  deepwork 2025-04-18 00:20
+### >>>  deepwork 2025-04-18 00:20
 
->>>  deepwork [datetime-%Y-%m-%d] HH:MM N
+### >>>  deepwork [datetime-%Y-%m-%d] HH:MM N
 append a single deep work session duration to a date with index N.
 Example:
->>>  deepwork 2025-04-18 00:20 1
+### >>>  deepwork 2025-04-18 00:20 1
 
->>>  deepwork [datetime-%Y-%m-%d]
+### >>>  deepwork [datetime-%Y-%m-%d]
 get a date data.
 Example:
->>>  deepwork 2025-04-18
+### >>>  deepwork 2025-04-18
 
->>>  deepwork [datetime-%Y-%m-%d] pop
+### >>>  deepwork [datetime-%Y-%m-%d] pop
 Remove the last recorded duration of a date.
 Example:
->>>  deepwork 2025-04-18 pop
+### >>>  deepwork 2025-04-18 pop
 
->>>  deepwork [datetime-%Y-%m-%d] pop N
+### >>>  deepwork [datetime-%Y-%m-%d] pop N
 Remove the last recorded duration of a date with index N.
-Example:
->>>  deepwork 2025-04-18 pop 1
+Exmple:
+### >>>  deepwork 2025-04-18 pop 1
 
->>>  deepwork [datetime-%Y-%m-%d] popall
+### >>>  deepwork [datetime-%Y-%m-%d] popall
 Clear all durations from the list.
 Example:
->>>  deepwork 2025-04-18 popall
+### >>>  deepwork 2025-04-18 popall
 
->>>  deepwork [datetime-%Y-%m-%d] list HH:MM HH:MM
+### >>>  deepwork [datetime-%Y-%m-%d] list HH:MM HH:MM
 Clear all durations from the list.
 Example:
->>>  deepwork 2025-04-18 list 0:30 1:30
+### >>>  deepwork 2025-04-18 list 0:30 1:30
 
-** statistics:
+## statistics:
 
->>>  deepwork [datetime-%Y-%m-%d] [datetime-%Y-%m-%d]
+### >>>  deepwork [datetime-%Y-%m-%d] [datetime-%Y-%m-%d]
 Bring up statistics between two dates.
 Example:
->>>  deepwork 2025-04-18 2020-04-18
+### >>>  deepwork 2025-04-18 2020-04-18
 
->>>  deepwork [datetime-%Y-%m-%d] today
+### >>>  deepwork [datetime-%Y-%m-%d] today
 Bring up statistics between a date and today.
 note: you can also enter command like this:
->>> deepwork today [datetime-%Y-%m-%d]
+### >>> deepwork today [datetime-%Y-%m-%d]
 Example:
->>>  deepwork 2025-04-18 today
+### >>>  deepwork 2025-04-18 today
 
->>>  deepwork N
+### >>>  deepwork N
 Bring up statistics N days ago.
 Example:
->>>  deepwork 10
+### >>>  deepwork 10
