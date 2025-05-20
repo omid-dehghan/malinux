@@ -20,8 +20,8 @@ This project is a work in progress. Some features are incomplete or experimental
 ### >>> deepwork HH:MM
 append a single deep work session duration.
 Example:
-## >>> deepwork 00:20
-
+#### >>> deepwork 00:20
+---
 ### >>> deepwork HH:MM N
 insert a single deep work session duration with index N.
 Example:
