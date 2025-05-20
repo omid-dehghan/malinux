@@ -18,8 +18,8 @@ This project is a work in progress. Some features are incomplete or experimental
 ## Available Commands (open this in code mode)
 
 ### >>> deepwork HH:MM
-append a single deep work session duration.
-Example:
+#### append a single deep work session duration.
+#### Example:
 #### >>> deepwork 00:20
 ---
 ### >>> deepwork HH:MM N
