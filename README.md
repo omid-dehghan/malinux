@@ -1,4 +1,4 @@
-The Story Behind This Project
+# The Story Behind This Project
 It all started when I realized that I wasn't feeling good about myself and my productivity. I needed a way to track my deep work sessions, specifically the time spent on focused study. By doing so, I hoped to gain confidence and boost my self-esteem. I wasn't sure how much time I was truly dedicating to my studies each day. And worse, I feared I might not be working as hard as I thought.
 
 At the same time, I felt an urge to start contributing more actively on GitHub—building something meaningful that could help me grow, learn, and share with others. So, I thought, why not combine the two?
@@ -15,7 +15,7 @@ This project uses a simple list-based data structure to help you track your deep
 This project is a work in progress. Some features are incomplete or experimental. If you encounter bugs, please report them as issues, and we will address them when possible.
 
 
-Available Commands (open this in code mode)
+## Available Commands (open this in code mode)
 >>> deepwork HH:MM
 append a single deep work session duration.
 Example:
