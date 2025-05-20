@@ -16,7 +16,7 @@ This project is a work in progress. Some features are incomplete or experimental
 
 
 ## Available Commands (open this in code mode)
->>> deepwork HH:MM
+### >>> deepwork HH:MM
 append a single deep work session duration.
 Example:
 >>> deepwork 00:20
