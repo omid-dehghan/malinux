@@ -20,26 +20,26 @@ This project is a work in progress. Some features are incomplete or experimental
 ### >>> deepwork HH:MM
 append a single deep work session duration.
 Example:
-### >>> deepwork 00:20
+## >>> deepwork 00:20
 
 ### >>> deepwork HH:MM N
 insert a single deep work session duration with index N.
 Example:
-### >>> deepwork 00:20 1
+## >>> deepwork 00:20 1
 
 ### >>> deepwork list HH:MM HH:MM ...
 append multiple deep work durations at once.
 Example:
-### >>> deepwork list 00:20 01:20 10:00
+## >>> deepwork list 00:20 01:20 10:00
 
 ### >>>  deepwork pop N
 Remove a recorded duration from the list with index N.
 Example:
-### >>>  deepwork 00:20 1
+## >>>  deepwork 00:20 1
 
 ### >>>  deepwork pop
 Remove the last recorded duration from the list.
-
+##
 ### >>>  deepwork popall
 Clear all durations from the list.
 
