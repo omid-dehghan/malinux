@@ -1,5 +1,5 @@
 # Ignore the virtual environment
-myenv/
+malinuxvenv/
 
 # Ignore Python cache
 __pycache__/
